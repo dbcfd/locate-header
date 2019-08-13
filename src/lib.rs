@@ -5,11 +5,17 @@ use std::path::PathBuf;
 fn find_it_in(to_find: &str, path: PathBuf) -> Option<PathBuf> {
     debug!("Searching {:?} for {}", path, to_find);
     if path.is_dir() {
-        let read_dir = path.read_dir().expect("Could not read directory");
-        for sub_path in read_dir {
-            let entry = sub_path.expect("Failed to get entry");
-            if let Some(f) = find_it_in(to_find, entry.path()) {
-                return Some(f);
+        match path.read_dir() {
+            Ok(read_dir) => {
+                let mut i = read_dir.into_iter();
+                while let Some(Ok(entry)) = i.next() {
+                    if let Some(f) = find_it_in(to_find, entry.path()) {
+                        return Some(f);
+                    }
+                }
+            }
+            Err(e) => {
+                warn!("Could not search for {} in {:?}: {:?}", to_find, path, e);
             }
         }
     } else if path.is_file() {
