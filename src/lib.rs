@@ -55,8 +55,8 @@ fn locate_header_from_package(
 }
 
 pub struct Package {
-    version: String,
-    name: String,
+    pub version: String,
+    pub name: String,
 }
 
 pub fn locate_header(header_name: &str, package: Option<Package>) -> Option<PathBuf> {
